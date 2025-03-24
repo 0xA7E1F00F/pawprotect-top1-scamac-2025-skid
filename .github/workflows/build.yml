@@ -27,6 +27,11 @@ jobs:
         run: |
           chmod +x patch.sh
           chmod +x build.sh
+          chmod +x update.sh
+
+      - name: Update upstream
+        shell: bash
+        run: ./update.sh
 
       - name: Apply Patch
         shell: bash
