@@ -38,7 +38,9 @@ jobs:
       - name: Build
         shell: bash
         run: |
+          echo "Main" && ls -a
           cd Grim
+          echo "Grim" && ls -a
           chmod +x gradlew
           ./gradlew build --stacktrace
 
