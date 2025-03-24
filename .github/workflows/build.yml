@@ -35,9 +35,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
 
-      - name: Build project with Gradle
+      - name: Build
         shell: bash
-        run: ./build.sh
+        run: |
+          cd Grim
+          ./gradlew build --stacktrace
 
       - name: Archive plugin jars on GitHub
         uses: actions/upload-artifact@v4
