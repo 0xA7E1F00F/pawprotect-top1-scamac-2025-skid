@@ -2,6 +2,10 @@
 
 ## Credits
 
-Euphillya
-ChatGPT
+Euphillya - Parts of the scripts
+
+ChatGPT - Checks
+
 MetaOne - Patch scripts, CI/CD
+
+Delyfss - Leak
