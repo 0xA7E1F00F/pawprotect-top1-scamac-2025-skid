@@ -4,3 +4,4 @@
 
 Euphillya
 ChatGPT
+MetaOne - Patch scripts, CI/CD
