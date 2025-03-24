@@ -46,8 +46,8 @@ jobs:
           cd Grim
           ./gradlew build --stacktrace
 
-      - name: Upload plugin jars to GitHub
+      - name: Upload PawProtect jars to GitHub
         uses: actions/upload-artifact@main
         with:
           name: PawProtect
-          path: build/libs/*.jar
+          path: Grim/build/libs/*.jar
