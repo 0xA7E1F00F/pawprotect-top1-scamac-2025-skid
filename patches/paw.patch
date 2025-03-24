@@ -1,0 +1,212 @@
+Subject: [PATCH] paw
+---
+Index: src/main/java/ac/grim/grimac/checks/impl/aim/AimSosal.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ac/grim/grimac/checks/impl/aim/AimSosal.java b/src/main/java/ac/grim/grimac/checks/impl/aim/AimSosal.java
+new file mode 100644
+--- /dev/null	(date 1742837531180)
++++ b/src/main/java/ac/grim/grimac/checks/impl/aim/AimSosal.java	(date 1742837531180)
+@@ -0,0 +1,33 @@
++package ac.grim.grimac.checks.impl.aim;
++
++import ac.grim.grimac.checks.Check;
++import ac.grim.grimac.checks.CheckData;
++import ac.grim.grimac.checks.type.RotationCheck;
++import ac.grim.grimac.player.GrimPlayer;
++import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
++
++@CheckData(name = "AimSosal")
++public class AimSosal extends Check implements RotationCheck {
++    private float lastDenisMatematikaBruteforceResultCompared;
++
++    public AimSosal(GrimPlayer player) {
++        super(player);
++    }
++
++    @Override
++    public void process(final RotationUpdate rotationUpdate) {
++        final float pitchDelta = rotationUpdate.getDeltaYRot();
++
++        if (player.actionManager.isAttacking()) {
++            if (pitchDelta == lastDenisMatematikaBruteforceResultCompared) {
++                alert("sosal=?UNKNOWN_SYMBOLUNKNOWN_SYMBOLUNKNOWN_SYMBOLUNKNOWN_SYMBOL");
++            } else {
++                lastDenisMatematikaBruteforceResultCompared = Math.round(pitchDelta);
++                reward(); //wtf
++            }
++        } else {
++            lastDenisMatematikaBruteforceResultCompared = Math.round(pitchDelta);
++            reward(); //wtf
++        }
++    }
++}
+Index: src/main/java/ac/grim/grimac/checks/impl/aim/Aim.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ac/grim/grimac/checks/impl/aim/Aim.java b/src/main/java/ac/grim/grimac/checks/impl/aim/Aim.java
+new file mode 100644
+--- /dev/null	(date 1742837531180)
++++ b/src/main/java/ac/grim/grimac/checks/impl/aim/Aim.java	(date 1742837531180)
+@@ -0,0 +1,28 @@
++package ac.grim.grimac.checks.impl.aim;
++
++import ac.grim.grimac.checks.Check;
++import ac.grim.grimac.checks.CheckData;
++import ac.grim.grimac.checks.type.RotationCheck;
++import ac.grim.grimac.player.GrimPlayer;
++import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
++
++@CheckData(name = "Aim")
++public class Aim extends Check implements RotationCheck {
++    public float denis;
++
++    //im a dumb skid kid who renamed alerts to pawprotect but grimplayer couldnt
++    public Aim(GrimPlayer player) {
++        super(player);
++    }
++
++    @Override
++    public void process(final RotationUpdate rotationUpdate) {
++        if (player.actionManager.isAttacking()) {
++            if (Math.abs(denis) > 30 && (denis > 0) ^ (rotationUpdate.getDeltaXRot() > 0)) {
++                flagAndAlert();
++            }
++        } else {
++            denis = rotationUpdate.getDeltaXRot();
++        }
++    }
++}
+Index: src/main/java/ac/grim/grimac/checks/impl/aim/Aim行为.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ac/grim/grimac/checks/impl/aim/Aim行为.java b/src/main/java/ac/grim/grimac/checks/impl/aim/Aim行为.java
+new file mode 100644
+--- /dev/null	(date 1742837531180)
++++ b/src/main/java/ac/grim/grimac/checks/impl/aim/Aim行为.java	(date 1742837531180)
+@@ -0,0 +1,33 @@
++package ac.grim.grimac.checks.impl.aim;
++
++import ac.grim.grimac.checks.Check;
++import ac.grim.grimac.checks.CheckData;
++import ac.grim.grimac.checks.type.RotationCheck;
++import ac.grim.grimac.player.GrimPlayer;
++import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
++import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
++
++@CheckData(name = "Aim行为")
++public class Aim行为 extends Check implements RotationCheck {
++    private DescriptiveStatistics pitch = new DescriptiveStatistics(240);
++
++    public Aim行为(GrimPlayer player) {
++        super(player);
++    }
++
++    @Override
++    public void process(final RotationUpdate rotationUpdate) {
++        //ну тут как бы оно при заходе будет первые 80 пакетов логать но денису похуй ????
++        if (player.totalFlyingPacketsSent <= 80) {
++           pitch.addValue(rotationUpdate.getDeltaYRot());
++        }
++
++        if (pitch.getN() == 240) {
++            if (pitch.getKurtosis() > 30 && pitch.getVariance() < 15) {
++                flagAndAlert();
++                pitch.clear();
++            }
++            // pitch.clear(); - по идее должно тут стоять но дениске похуй
++        }
++    }
++}
+Index: src/main/java/ac/grim/grimac/checks/impl/aim/AimThunderHackBruteforceInterpolation.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ac/grim/grimac/checks/impl/aim/AimThunderHackBruteforceInterpolation.java b/src/main/java/ac/grim/grimac/checks/impl/aim/AimThunderHackBruteforceInterpolation.java
+new file mode 100644
+--- /dev/null	(date 1742837531180)
++++ b/src/main/java/ac/grim/grimac/checks/impl/aim/AimThunderHackBruteforceInterpolation.java	(date 1742837531180)
+@@ -0,0 +1,31 @@
++package ac.grim.grimac.checks.impl.aim;
++
++import ac.grim.grimac.checks.Check;
++import ac.grim.grimac.checks.CheckData;
++import ac.grim.grimac.checks.type.RotationCheck;
++import ac.grim.grimac.player.GrimPlayer;
++import ac.grim.grimac.utils.anticheat.update.RotationUpdate;
++
++@CheckData(name = "AimThunderHackBruteforceInterpolation")
++public class AimThunderHackBruteforceInterpolation extends Check implements RotationCheck {
++
++    private float denismatematikaconstant1;
++    private float denismatematikaconstant2 = 10F;
++
++    public AimThunderHackBruteforceInterpolation(GrimPlayer playerData) {
++        super(playerData);
++    }
++
++    @Override
++    public void process(final RotationUpdate rotationUpdate) {
++        if (player.actionManager.isAttacking()) {
++            if (rotationUpdate.getDeltaYRotABS() < 10F && denismatematikaconstant1 > 25F && denismatematikaconstant2 < 10F) {
++              flagAndAlert();
++            }
++
++            denismatematikaconstant2 = denismatematikaconstant1;
++        } else {
++            denismatematikaconstant1 = rotationUpdate.getDeltaYRotABS();
++        }
++    }
++}
+Index: src/main/java/ac/grim/grimac/manager/CheckManager.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/ac/grim/grimac/manager/CheckManager.java b/src/main/java/ac/grim/grimac/manager/CheckManager.java
+--- a/src/main/java/ac/grim/grimac/manager/CheckManager.java	(revision 32c75c78b0bb89ace6193dd981d402806e0b6457)
++++ b/src/main/java/ac/grim/grimac/manager/CheckManager.java	(date 1742837672851)
+@@ -1,8 +1,7 @@
+ package ac.grim.grimac.manager;
+ 
+ import ac.grim.grimac.api.AbstractCheck;
+-import ac.grim.grimac.checks.impl.aim.AimDuplicateLook;
+-import ac.grim.grimac.checks.impl.aim.AimModulo360;
++import ac.grim.grimac.checks.impl.aim.*;
+ import ac.grim.grimac.checks.impl.aim.processor.AimProcessor;
+ import ac.grim.grimac.checks.impl.badpackets.*;
+ import ac.grim.grimac.checks.impl.breaking.*;
+@@ -134,6 +133,10 @@
+                 .put(AimProcessor.class, new AimProcessor(player))
+                 .put(AimModulo360.class, new AimModulo360(player))
+                 .put(AimDuplicateLook.class, new AimDuplicateLook(player))
++                .put(Aim.class, new Aim(player))
++                .put(AimThunderHackBruteforceInterpolation.class, new AimThunderHackBruteforceInterpolation(player))
++                .put(Aim行为.class, new Aim行为(player))
++                .put(AimSosal.class, new AimSosal(player))
+ //                .put(Baritone.class, new Baritone(player))
+                 .build();
+         vehicleCheck = new ImmutableClassToInstanceMap.Builder<VehicleCheck>()
+Index: build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle.kts b/build.gradle.kts
+--- a/build.gradle.kts	(revision 32c75c78b0bb89ace6193dd981d402806e0b6457)
++++ b/build.gradle.kts	(date 1742837737043)
+@@ -81,6 +81,7 @@
+     compileOnly("com.viaversion:viaversion-api:5.0.4-SNAPSHOT")
+     compileOnly("me.clip:placeholderapi:2.11.6")
+     compileOnly("io.netty:netty-all:4.1.85.Final")
++    implementation("org.apache.commons:commons-math3:3.6.1")
+ }
+ 
+ bukkit {

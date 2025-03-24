@@ -1,0 +1,53 @@
+name: Build and Upload Jar
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission to scripts
+        run: |
+          chmod +x patch.sh
+          chmod +x build.sh
+          chmod +x update.sh
+
+      - name: Update upstream
+        shell: bash
+        run: ./update.sh
+
+      - name: Apply Patch
+        shell: bash
+        run: ./patch.sh
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Build
+        shell: bash
+        run: |
+          cd Grim
+          ./gradlew build --stacktrace
+
+      - name: Upload plugin jars to GitHub
+        uses: actions/upload-artifact@main
+        with:
+          name: PawProtect
+          path: build/libs/*.jar

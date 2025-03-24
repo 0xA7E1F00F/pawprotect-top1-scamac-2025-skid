@@ -1,0 +1,3 @@
+[submodule "Grim"]
+	path = Grim
+	url = https://github.com/GrimAnticheat/Grim.git
